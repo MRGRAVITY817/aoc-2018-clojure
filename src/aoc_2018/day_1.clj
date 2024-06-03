@@ -6,7 +6,7 @@
    Input is a string with frequency changes separated by newlines."
   [input]
   (->> input
-       (str/split-lines)
+       str/split-lines
        (map #(Integer/parseInt %))))
 
 (defn resulting-frequency
@@ -16,9 +16,10 @@
        parse-frequency-changes
        (reduce + 0)))
 
-(defn day-1 []
-  (->> (slurp "resources/day_1_input.txt")
-       (resulting-frequency)))
+(defn day-1 [input]
+  (->> input
+       slurp
+       resulting-frequency))
 
 (comment
-  (day-1)) ; 599
+  (day-1 "resources/day_1_input.txt")) ; 599
