@@ -61,6 +61,12 @@
          (filter (fn [[id1 id2]] (= 1 (char-diff id1 id2))))
          first)))
 
+(defn overlapping-letters [w1 w2]
+  (->> (map vector w1 w2)
+       (filter (fn [[c1 c2]] (= c1 c2)))
+       (map first)
+       (apply str)))
+
 (comment
   (contains-exactly-n-of-any-letter? "abcdef" 2) ; false
   (contains-exactly-n-of-any-letter? "abadef" 2) ; true
@@ -68,7 +74,10 @@
   (contains-exactly-n-of-any-letter? "abadea" 3) ; true
   (checksum ["abcdef" "bababc" "abbcde" "abcccd" "aabcdd" "abcdee" "ababab"]) ; 12
   (day-2-part-1 "resources/day_2_input.txt") ; 5166
+  (overlapping-letters "aaaab" "aaabb")  ; "aaab"
 ;
   )
+
+
 
 

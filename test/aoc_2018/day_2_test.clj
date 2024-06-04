@@ -26,3 +26,6 @@
   (is (= (sut/similar-box-ids ["abcde" "fghij" "klmno" "pqrst" "fguij" "axcye" "wvxyz"])
          ["fghij" "fguij"])))
 
+(deftest test-overlapping-letters
+  (is (= (sut/overlapping-letters "fghij" "fguij") "fgij")))
+
