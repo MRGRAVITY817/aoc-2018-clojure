@@ -27,5 +27,5 @@
          ["fghij" "fguij"])))
 
 (deftest test-overlapping-letters
-  (is (= (sut/overlapping-letters "fghij" "fguij") "fgij")))
+  (is (= (sut/overlapping-letters ["fghij" "fguij"]) "fgij")))
 
