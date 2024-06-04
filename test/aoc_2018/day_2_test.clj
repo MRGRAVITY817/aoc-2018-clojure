@@ -6,3 +6,8 @@
   (is (= (sut/parse-box-ids "abcdef\nbababc\nabbcde\nabcccd\naabcdd\nabcdee\nababab")
          ["abcdef" "bababc" "abbcde" "abcccd" "aabcdd" "abcdee" "ababab"])))
 
+(deftest test-containing-exactly-n-of-any-letter
+  (testing "n = 2"
+    (is (= (sut/contains-exactly-n-of-any-letter? "abcdef" 2) false))
+    (is (= (sut/contains-exactly-n-of-any-letter? "abadef" 2) true))))
+
