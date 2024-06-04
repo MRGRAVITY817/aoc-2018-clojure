@@ -50,6 +50,17 @@
        (filter (fn [[c1 c2]] (not= c1 c2)))
        count))
 
+(defn similar-box-ids
+  "Find the two box IDs that differ by exactly one character."
+  [box-ids]
+  (let [pairs (for [id1 box-ids
+                    id2 box-ids
+                    :when (< (char-diff id1 id2) 2)]
+                [id1 id2])]
+    (->> pairs
+         (filter (fn [[id1 id2]] (= 1 (char-diff id1 id2))))
+         first)))
+
 (comment
   (contains-exactly-n-of-any-letter? "abcdef" 2) ; false
   (contains-exactly-n-of-any-letter? "abadef" 2) ; true
@@ -59,3 +70,5 @@
   (day-2-part-1 "resources/day_2_input.txt") ; 5166
 ;
   )
+
+

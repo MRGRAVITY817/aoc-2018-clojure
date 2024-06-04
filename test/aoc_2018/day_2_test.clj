@@ -22,3 +22,7 @@
   (is (= (sut/char-diff "abcde" "axcye") 2))
   (is (= (sut/char-diff "fghij" "fguij") 1)))
 
+(deftest test-similar-box-ids
+  (is (= (sut/similar-box-ids ["abcde" "fghij" "klmno" "pqrst" "fguij" "axcye" "wvxyz"])
+         ["fghij" "fguij"])))
+
