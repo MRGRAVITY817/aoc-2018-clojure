@@ -18,3 +18,7 @@
   (is (= (sut/checksum ["abcdef" "bababc" "abbcde" "abcccd" "aabcdd" "abcdee" "ababab"])
          12)))
 
+(deftest test-char-diff
+  (is (= (sut/char-diff "abcde" "axcye") 2))
+  (is (= (sut/char-diff "fghij" "fguij") 1)))
+

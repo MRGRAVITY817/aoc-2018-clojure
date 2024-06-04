@@ -1,6 +1,8 @@
 (ns aoc-2018.day-2
   (:require [clojure.string :as str]))
 
+;; Part 1
+
 (defn parse-box-ids
   "Parse box IDs from a string.
    Input is a string with box IDs separated by newlines."
@@ -38,6 +40,15 @@
       slurp
       parse-box-ids
       checksum))
+
+;; Part 2
+
+(defn char-diff
+  "Calculate the number of different (by location) characters between two strings."
+  [s1 s2]
+  (->> (map vector s1 s2)
+       (filter (fn [[c1 c2]] (not= c1 c2)))
+       count))
 
 (comment
   (contains-exactly-n-of-any-letter? "abcdef" 2) ; false
