@@ -39,10 +39,10 @@
 (defn day-1-part-2
   "Find the first frequency that is reached twice from a file."
   [input]
-  (->> input
-       slurp
-       parse-frequency-changes
-       twice-reached-frequency))
+  (-> input
+      slurp
+      parse-frequency-changes
+      twice-reached-frequency))
 
 (comment
   (day-1-part-1 "resources/day_1_input.txt") ; 599
