@@ -9,8 +9,12 @@
 (deftest test-containing-exactly-n-of-any-letter
   (testing "n = 2"
     (is (= (sut/contains-exactly-n-of-any-letter? "abcdef" 2) false))
-    (is (= (sut/contains-exactly-n-of-any-letter? "abadef" 2) true))))
+    (is (= (sut/contains-exactly-n-of-any-letter? "abadef" 2) true)))
+  (testing "n = 3"
+    (is (= (sut/contains-exactly-n-of-any-letter? "abcdef" 3) false))
+    (is (= (sut/contains-exactly-n-of-any-letter? "abadea" 3) true))))
 
 (deftest test-checksum
   (is (= (sut/checksum ["abcdef" "bababc" "abbcde" "abcccd" "aabcdd" "abcdee" "ababab"])
          12)))
+
