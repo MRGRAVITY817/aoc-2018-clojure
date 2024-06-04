@@ -11,3 +11,6 @@
     (is (= (sut/contains-exactly-n-of-any-letter? "abcdef" 2) false))
     (is (= (sut/contains-exactly-n-of-any-letter? "abadef" 2) true))))
 
+(deftest test-checksum
+  (is (= (sut/checksum ["abcdef" "bababc" "abbcde" "abcccd" "aabcdd" "abcdee" "ababab"])
+         12)))

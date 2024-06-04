@@ -18,17 +18,24 @@
    (contains-exactly-n-of-any-letter? \"abadef\" 2) ; true
    ```
   "
-  [box-id n]
-  (->> box-id
+  [input n]
+  (->> input
        frequencies
        vals
        (some #(= n %))
        boolean))
+
+(defn checksum
+  "Calculate the checksum of a list of box IDs."
+  [box-ids]
+  (* (count (filter #(contains-exactly-n-of-any-letter? % 2) box-ids))
+     (count (filter #(contains-exactly-n-of-any-letter? % 3) box-ids))))
 
 (comment
   (contains-exactly-n-of-any-letter? "abcdef" 2) ; false
   (contains-exactly-n-of-any-letter? "abadef" 2) ; true
   (contains-exactly-n-of-any-letter? "abcdef" 3) ; false
   (contains-exactly-n-of-any-letter? "abadea" 3) ; true
+  (checksum ["abcdef" "bababc" "abbcde" "abcccd" "aabcdd" "abcdee" "ababab"]) ; 12
 ;
   )
