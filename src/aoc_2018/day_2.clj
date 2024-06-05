@@ -1,5 +1,6 @@
 (ns aoc-2018.day-2
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.set :refer [map-invert]]))
 
 ;; Part 1
 
@@ -21,11 +22,8 @@
    ```
   "
   [input n]
-  (->> input
-       frequencies
-       vals
-       (some #(= n %))
-       boolean))
+  (let [dict (->> input frequencies map-invert)]
+    (contains? dict n)))
 
 (defn checksum
   "Calculate the checksum of a list of box IDs."
