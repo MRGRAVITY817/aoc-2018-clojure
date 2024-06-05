@@ -61,8 +61,10 @@
          (filter (fn [[id1 id2]] (= 1 (char-diff id1 id2))))
          first)))
 
-(defn overlapping-letters [[w1 w2]]
-  (->> (map vector w1 w2)
+(defn overlapping-letters
+  "Find the overlapping letters of the two words."
+  [[word1 word2]]
+  (->> (map vector word1 word2)
        (filter (fn [[c1 c2]] (= c1 c2)))
        (map first)
        (apply str)))
