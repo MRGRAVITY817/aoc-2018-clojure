@@ -53,11 +53,9 @@
   [box-ids]
   (let [pairs (for [id1 box-ids
                     id2 box-ids
-                    :when (< (char-diff id1 id2) 2)]
+                    :when (= (char-diff id1 id2) 1)]
                 [id1 id2])]
-    (->> pairs
-         (filter (fn [[id1 id2]] (= 1 (char-diff id1 id2))))
-         first)))
+    (first pairs)))
 
 (defn overlapping-letters
   "Find the overlapping letters of the two words."
