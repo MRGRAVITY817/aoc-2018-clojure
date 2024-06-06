@@ -19,20 +19,3 @@
          (sut/count-overlapping-areas [{:id 1, :coords [1 3]} {:id 1, :coords [1 4]} {:id 1, :coords [2 3]} {:id 1, :coords [2 4]}
                                        {:id 2, :coords [1 3]} {:id 2, :coords [1 4]} {:id 2, :coords [2 3]} {:id 2, :coords [2 4]}]))))
 
-#_(deftest test-overlapping-area
-    (is (= #{[1 1] [1 2]}
-           (sut/overlapping-area #{{:id 1, :coords [1 1]} {:id 1, :coords [1 2]}
-                                   {:id 1, :coords [1 3]} {:id 1, :coords [1 4]}}
-                                 #{{:id 2, :coords [1 1]} {:id 2, :coords [1 2]}
-                                   {:id 2, :coords [2 1]} {:id 2, :coords [2 2]}}))))
-
-#_(deftest test-overlap-within
-    (is (= #{[1 1] [1 4] [1 3] [1 2]}
-           (sut/overlap-within [#{{:id 1, :coords [1 1]} {:id 1, :coords [1 2]} {:id 1, :coords [1 3]} {:id 1, :coords [1 4]}}
-                                #{{:id 2, :coords [1 1]} {:id 2, :coords [1 2]} {:id 2, :coords [2 1]} {:id 2, :coords [2 2]}}
-                                #{{:id 3, :coords [1 1]} {:id 3, :coords [1 2]} {:id 3, :coords [1 3]} {:id 3, :coords [1 4]}}
-                                #{{:id 4, :coords [1 1]} {:id 4, :coords [1 2]} {:id 4, :coords [1 3]} {:id 4, :coords [1 4]}}]))))
-
-
-
-
