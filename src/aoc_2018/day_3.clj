@@ -59,7 +59,20 @@
          (map :id)
          first)))
 
+(defn day-3-part-2
+  "Find the id of the claim that is not overlapped by any other claims."
+  [filename]
+  (->> filename
+       slurp
+       str/split-lines
+       (map parse-claim)
+       isolated-claim))
+
 (comment
+  (day-3-part-1 "resources/day_3_input.txt") ; 104241
+  (day-3-part-2 "resources/day_3_input.txt") ; 806
+  ;;
+
   (parse-claim "#1 @ 1,3: 2x2") ; #{{:id 1, :coords [2 3]} {:id 1, :coords [2 4]} {:id 1, :coords [1 4]} {:id 1, :coords [1 3]}}
   (map :coords #{{:id 1, :coords [1 1]} {:id 1, :coords [1 2]} {:id 1, :coords [1 3]} {:id 1, :coords [1 4]}})  ; ([1 2] [1 1] [1 4] [1 3])
   (into #{} #{[1 2] [2 3]}) ; #{1 2 3}
@@ -68,7 +81,6 @@
         (map :coords)
         frequencies
         (filter #(>= (val %) 2)))
-  (day-3-part-1 "resources/day_3_input.txt") ; 104241
   (->> (map :coords [{:id 1, :coords [1 2]} {:id 1, :coords [1 3]}]) ; ([1 2] [1 3])
        (every? #(contains? [[1 2] [1 3] [2 1] [2 2]] %)))
   (subset? #{[1 2] [1 3]} #{[1 2] [1 3] [2 1] [2 2]}) ; true
