@@ -19,3 +19,15 @@
          (sut/count-overlapping-areas [{:id 1, :coords [1 3]} {:id 1, :coords [1 4]} {:id 1, :coords [2 3]} {:id 1, :coords [2 4]}
                                        {:id 2, :coords [1 3]} {:id 2, :coords [1 4]} {:id 2, :coords [2 3]} {:id 2, :coords [2 4]}]))))
 
+(deftest test-isolated-claim
+  (testing "every claims are overlapped"
+    (is (= nil
+           (sut/isolated-claim [[{:id 1, :coords [1 3]} {:id 1, :coords [1 4]} {:id 1, :coords [2 3]} {:id 1, :coords [2 4]}]
+                                [{:id 2, :coords [1 3]} {:id 2, :coords [1 4]} {:id 2, :coords [2 3]} {:id 2, :coords [2 4]}]
+                                [{:id 3, :coords [5 5]} {:id 3, :coords [1 4]}]]))))
+  (testing "has an isolated claim"
+    (is (= 3
+           (sut/isolated-claim [[{:id 1, :coords [1 3]} {:id 1, :coords [1 4]} {:id 1, :coords [2 3]} {:id 1, :coords [2 4]}]
+                                [{:id 2, :coords [1 3]} {:id 2, :coords [1 4]} {:id 2, :coords [2 3]} {:id 2, :coords [2 4]}]
+                                [{:id 3, :coords [5 5]}]])))))
+
