@@ -22,8 +22,10 @@
 
 (defn parse-and-concat
   "Parse and concatenate a list of claims."
-  [inputs]
-  (mapcat parse-claim inputs))
+  [input]
+  (->> input
+       str/split-lines
+       (mapcat parse-claim)))
 
 (defn count-overlapping-areas
   "Count areas that has been overlapped by more than two claims."
@@ -39,7 +41,6 @@
   [filename]
   (-> filename
       slurp
-      str/split-lines
       parse-and-concat
       count-overlapping-areas))
 

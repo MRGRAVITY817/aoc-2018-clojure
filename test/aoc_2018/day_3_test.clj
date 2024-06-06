@@ -12,7 +12,7 @@
 (deftest test-parse-and-concat
   (is (= [{:id 1, :coords [1 3]} {:id 1, :coords [1 4]} {:id 1, :coords [2 3]} {:id 1, :coords [2 4]}
           {:id 2, :coords [1 3]} {:id 2, :coords [1 4]} {:id 2, :coords [2 3]} {:id 2, :coords [2 4]}]
-         (sut/parse-and-concat ["#1 @ 1,3: 2x2" "#2 @ 1,3: 2x2"]))))
+         (sut/parse-and-concat "#1 @ 1,3: 2x2\n#2 @ 1,3: 2x2"))))
 
 (deftest test-count-overlapping-areas
   (is (= 4
