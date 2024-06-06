@@ -60,14 +60,20 @@
          (map :id)
          first)))
 
+(defn parse-claims
+  "Parse a list of claims from a string."
+  [input]
+  (->> input
+       str/split-lines
+       (map parse-claim)))
+
 (defn day-3-part-2
   "Find the id of the claim that is not overlapped by any other claims."
   [filename]
-  (->> filename
-       slurp
-       str/split-lines
-       (map parse-claim)
-       isolated-claim))
+  (-> filename
+      slurp
+      parse-claims
+      isolated-claim))
 
 (comment
   (day-3-part-1 "resources/day_3_input.txt") ; 104241
