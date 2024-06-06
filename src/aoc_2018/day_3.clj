@@ -1,6 +1,6 @@
 (ns aoc-2018.day-3
-  (:require [clojure.set :refer [intersection union]]
-            [clojure.string :as str]))
+  (:require #_[clojure.set :refer [intersection union]]
+   [clojure.string :as str]))
 
 (def claim-regex #"#(\d+) @ (\d+),(\d+): (\d+)x(\d+)")
 
@@ -24,6 +24,15 @@
   "Parse and concatenate a list of claims."
   [inputs]
   (mapcat parse-claim inputs))
+
+(defn count-overlapping-areas
+  "Count areas that has been overlapped by more than two claims."
+  [areas]
+  (->> areas
+       (map :coords)
+       frequencies
+       (filter #(>= (val %) 2))
+       count))
 
 #_(defn overlapping-area
     "Find the overlapping area between two sets of coordinates."
@@ -67,7 +76,14 @@
                      #{{:id 3, :coords [1 1]} {:id 3, :coords [1 2]} {:id 3, :coords [1 3]} {:id 3, :coords [1 4]}}
                      #{{:id 4, :coords [1 1]} {:id 4, :coords [1 2]} {:id 4, :coords [1 3]} {:id 4, :coords [1 4]}}]) ; #{[1 1] [1 4] [1 3] [1 2]}
   #_(day-3-part-1 "resources/day_3_input.txt")
+  (->>  [{:id 1, :coords [1 3]} {:id 1, :coords [1 4]} {:id 1, :coords [2 3]} {:id 1, :coords [2 4]}
+         {:id 2, :coords [1 3]} {:id 2, :coords [1 4]} {:id 2, :coords [2 3]} {:id 2, :coords [2 4]}]
+        (map :coords)
+        frequencies
+        (filter #(>= (val %) 2)))
   ;
   )
+
+
 
 
