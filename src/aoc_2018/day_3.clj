@@ -1,5 +1,5 @@
 (ns aoc-2018.day-3
-  (:require [clojure.set :refer [intersection]]))
+  (:require [clojure.set :refer [intersection union]]))
 
 (def claim-regex #"#(\d+) @ (\d+),(\d+): (\d+)x(\d+)")
 
@@ -27,9 +27,27 @@
         overlapping (intersection coords1 coords2)]
     overlapping))
 
+(defn overlap-within
+  [coord-sets]
+  (loop [[current & others] coord-sets
+         overlap            #{}]
+    (if (empty? others)
+      overlap
+      (recur others
+             (->> others
+                  (map #(overlapping-area current %))
+                  (reduce union overlap))))))
+
 (comment
   (parse-claim "#1 @ 1,3: 2x2") ; #{{:id 1, :coords [2 3]} {:id 1, :coords [2 4]} {:id 1, :coords [1 4]} {:id 1, :coords [1 3]}}
   (map :coords #{{:id 1, :coords [1 1]} {:id 1, :coords [1 2]} {:id 1, :coords [1 3]} {:id 1, :coords [1 4]}})  ; ([1 2] [1 1] [1 4] [1 3])
   (overlapping-area #{{:id 1, :coords [1 1]} {:id 1, :coords [1 2]} {:id 1, :coords [1 3]} {:id 1, :coords [1 4]}}
                     #{{:id 2, :coords [1 1]} {:id 2, :coords [1 2]} {:id 2, :coords [2 1]} {:id 2, :coords [2 2]}})  ; #{[1 1] [1 2]}
+  (overlapping-area #{{:id 3, :coords [1 1]} {:id 3, :coords [1 2]} {:id 3, :coords [1 3]} {:id 3, :coords [1 4]}}
+                    #{{:id 4, :coords [1 1]} {:id 4, :coords [1 2]} {:id 4, :coords [1 3]} {:id 4, :coords [1 4]}}) ; #{[1 1] [1 4] [1 3] [1 2]}
+  (into #{} #{[1 2] [2 3]}) ; #{1 2 3}
+  (overlap-within [#{{:id 1, :coords [1 1]} {:id 1, :coords [1 2]} {:id 1, :coords [1 3]} {:id 1, :coords [1 4]}}
+                   #{{:id 2, :coords [1 1]} {:id 2, :coords [1 2]} {:id 2, :coords [2 1]} {:id 2, :coords [2 2]}}
+                   #{{:id 3, :coords [1 1]} {:id 3, :coords [1 2]} {:id 3, :coords [1 3]} {:id 3, :coords [1 4]}}
+                   #{{:id 4, :coords [1 1]} {:id 4, :coords [1 2]} {:id 4, :coords [1 3]} {:id 4, :coords [1 4]}}]) ; #{[1 1] [1 4] [1 3] [1 2]}
   )
