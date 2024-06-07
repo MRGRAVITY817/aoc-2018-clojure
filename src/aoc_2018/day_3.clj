@@ -42,16 +42,21 @@
   (-> filename slurp parse-and-concat ;; parsing
       count-overlapping-areas))       ;; counting
 
+(defn- isolated-coords
+  "Get the coordinates that are not overlapped by any other claims."
+  [claims]
+  (->> claims
+       flatten
+       (map :coords)
+       frequencies
+       (filter #(= (val %) 1))
+       keys
+       set))
+
 (defn isolated-claim
   "Find and return the id of first claim that is not overlapped by any other claims."
   [claims]
-  (let [isolated-coords (->> claims
-                             flatten
-                             (map :coords)
-                             frequencies
-                             (filter #(= (val %) 1))
-                             keys
-                             set)]
+  (let [isolated-coords (isolated-coords claims)]
     (->> claims
          (filter #(subset? (set (map :coords %)) isolated-coords))
          flatten
