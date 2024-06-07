@@ -39,10 +39,8 @@
 (defn day-3-part-1
   "Calculate the overlapping area of a list of claims."
   [filename]
-  (-> filename
-      slurp
-      parse-and-concat
-      count-overlapping-areas))
+  (-> filename slurp parse-and-concat ;; parsing
+      count-overlapping-areas))       ;; counting
 
 (defn isolated-claim
   "Find and return the id of first claim that is not overlapped by any other claims."
@@ -70,10 +68,8 @@
 (defn day-3-part-2
   "Find the id of the claim that is not overlapped by any other claims."
   [filename]
-  (-> filename
-      slurp
-      parse-claims
-      isolated-claim))
+  (-> filename slurp parse-claims ;; parsing
+      isolated-claim))            ;; finding
 
 (comment
   (day-3-part-1 "resources/day_3_input.txt") ; 104241
