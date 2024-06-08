@@ -61,8 +61,18 @@
       (str/replace (str/lower-case alphabet) "")
       (str/replace (str/upper-case alphabet) "")))
 
+(defn day-5-part-2
+  "Return the minimum length of the polymer after removing the alphabet and reacting fully."
+  [filename]
+  (let [parsed-input    (parse-input filename)
+        reacted-lengths (map #(-> parsed-input (remove-alphabet %) react count)
+                             "abcdefghijklmnopqrstuvwxyz")
+        min-length      (apply min reacted-lengths)]
+    min-length))
+
 (comment
   (day-5-part-1 "resources/day_5_input.txt") ; 10888
+  (day-5-part-2 "resources/day_5_input.txt") ; 6952
 
   ;; helper functions
   (react "aA") ; []

@@ -23,3 +23,4 @@
            (sut/remove-alphabet "abBA" \a)))
     (is (= "dbcCCBcCcD"
            (sut/remove-alphabet "dabAcCaCBAcCcaDA" \a)))))
+
