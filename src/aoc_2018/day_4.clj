@@ -45,7 +45,7 @@
    ```
   "
   [input]
-  (let [lines (str/split-lines input)]
+  (let [lines (-> input str/split-lines sort)]
     (loop [lines   lines
            records []
            guard   nil]
@@ -56,14 +56,6 @@
           (recur (rest lines)
                  (conj records (assoc record :guard guard))
                  guard))))))
-
-(defn sort-chronologically
-  "Sort records chronologically."
-  [records]
-  (sort-by (fn [record]
-             (let [{:keys [year month day hour minute]} record]
-               [year month day hour minute]))
-           records))
 
 (defn partition-linked
   "Partition records into linked pairs.
@@ -116,38 +108,22 @@
 (defn laziest-guard
   "Return the sleep record of the guard that sleeps the most from given list of records."
   [records]
-  (let [guards (->> records
-                    sort-chronologically
-                    (group-by :guard)
-                    (mapcat records->sleep-record))
+  (let [guards        (->> records
+                           (group-by :guard)
+                           (mapcat records->sleep-record))
         laziest-guard (->> guards
                            (map :guard)
                            most-frequent)]
-
     (filter #(= (:guard %) laziest-guard) guards)))
 
 (defn most-asleep-min-x-id
   "Return the multiplied value between 
    - guard-id
    - the minute the guard was most asleep 
-   ... from given [guard-id sleep-record] vector."
-  [[guard-id sleep-record]]
-  (let [minute (->> sleep-record
-                    (group-by val)
-                    (apply max-key key)
-                    val sort first first)]
-    (* guard-id minute)))
-
-(comment
-  (->> {5 2, 6 1, 7 2, 8 1, 30 1}
-       (group-by val)
-       ;; largest key
-       (apply max-key key)
-       #_val
-       #_sort
-       #_first
-       #_first) ; 3
-  )
+   ... from given sleep record vector."
+  [sleep-record]
+  (let [{:keys [guard minute]} (most-frequent sleep-record)]
+    (* guard minute)))
 
 (defn day-4-part-1
   "Calculate the ID of the laziest guard multiplied by the minute the guard was most asleep."
@@ -156,7 +132,7 @@
       laziest-guard most-asleep-min-x-id)) ;; main logic
 
 (comment
-  (day-4-part-1 "resources/day_4_input.txt")
+  (day-4-part-1 "resources/day_4_input.txt") ; 39584
   ;; helper functions
   (parse-record "[1518-11-01 00:00] Guard #10 begins shift")
   (parse-record "[1518-11-01 00:05] falls asleep") ;

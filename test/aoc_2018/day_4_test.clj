@@ -32,19 +32,6 @@
             {:year 2024, :month 6, :day 8, :hour 0, :minute 55, :guard 99, :action "wakes up"}]
            (sut/parse-records "[2024-06-07 00:00] Guard #10 begins shift\n[2024-06-07 00:05] falls asleep\n[2024-06-07 00:25] wakes up\n[2024-06-08 00:00] Guard #99 begins shift\n[2024-06-08 00:30] falls asleep\n[2024-06-08 00:55] wakes up")))))
 
-(deftest test-sort-chronologically
-  (is (= [{:year 2024, :month 6, :day 7, :hour 0, :minute 0, :guard 10, :action "begins shift"}
-          {:year 2024, :month 6, :day 7, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
-          {:year 2024, :month 6, :day 7, :hour 0, :minute 25, :guard 10, :action "wakes up"}
-          {:year 2024, :month 6, :day 8, :hour 0, :minute 0, :guard 99, :action "begins shift"}
-          {:year 2024, :month 6, :day 8, :hour 0, :minute 30, :guard 99, :action "falls asleep"}
-          {:year 2024, :month 6, :day 8, :hour 0, :minute 55, :guard 99, :action "wakes up"}]
-         (sut/sort-chronologically [{:year 2024, :month 6, :day 7, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
-                                    {:year 2024, :month 6, :day 8, :hour 0, :minute 0, :guard 99, :action "begins shift"}
-                                    {:year 2024, :month 6, :day 7, :hour 0, :minute 0, :guard 10, :action "begins shift"}
-                                    {:year 2024, :month 6, :day 8, :hour 0, :minute 30, :guard 99, :action "falls asleep"}
-                                    {:year 2024, :month 6, :day 7, :hour 0, :minute 25, :guard 10, :action "wakes up"}
-                                    {:year 2024, :month 6, :day 8, :hour 0, :minute 55, :guard 99, :action "wakes up"}]))))
 (deftest test-partition-linked
   (is (= '[(0 1) (1 2) (2 3) (3 4) (4 5) (5 6) (6 7) (7 8) (8 9)]
          (sut/partition-linked (range 10)))))
@@ -90,11 +77,16 @@
                                {:year 2024, :month 6, :day 9, :hour 0, :minute 31, :guard 20, :action "wakes up"}])))))
 
 (deftest test-most-asleep-min-x-id
-  (testing "has one most asleep min"
-    (is (= (* 10 5)
-           (sut/most-asleep-min-x-id [10 {5 2, 6 1, 7 1, 8 1}])))
-    (is (= (* 99 7)
-           (sut/most-asleep-min-x-id [99 {5 2, 6 1, 7 10, 8 1, 30 1}]))))
-  (testing "has more than one asleep min"
-    (is (= (* 10 5)
-           (sut/most-asleep-min-x-id [10 {5 2, 6 1, 7 2, 8 1, 30 1}])))))
+  (is (= (* 10 5)
+         (sut/most-asleep-min-x-id [{:guard 10, :minute 5}
+                                    {:guard 10, :minute 6}
+                                    {:guard 10, :minute 5}
+                                    {:guard 10, :minute 7}
+                                    {:guard 10, :minute 8}])))
+  (is (= (* 99 7)
+         (sut/most-asleep-min-x-id [{:guard 99, :minute 7}
+                                    {:guard 99, :minute 5}
+                                    {:guard 99, :minute 6}
+                                    {:guard 99, :minute 7}
+                                    {:guard 99, :minute 8}]))))
+
