@@ -83,3 +83,7 @@
                                {:year 2024, :month 6, :day 9, :hour 0, :minute 25, :guard 20, :action "wakes up"}
                                {:year 2024, :month 6, :day 9, :hour 0, :minute 30, :guard 20, :action "falls asleep"}
                                {:year 2024, :month 6, :day 9, :hour 0, :minute 45, :guard 20, :action "wakes up"}])))))
+
+(deftest test-most-asleep-min-x-id
+  (is (= (* 10 5)
+         (sut/most-asleep-min-x-id [10 {5 2, 6 1, 7 1, 8 1}]))))

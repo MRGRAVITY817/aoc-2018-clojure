@@ -112,6 +112,18 @@
 
     (last guards)))
 
+(defn most-asleep-min-x-id
+  "Return the multiplied value between 
+   - guard-id
+   - the minute the guard was most asleep 
+   ... from given [guard-id sleep-record] vector."
+  [[guard-id sleep-record]]
+  (let [minute (->> sleep-record
+                    (sort-by val)
+                    last
+                    key)]
+    (* guard-id minute)))
+
 (comment
   (parse-record "[1518-11-01 00:00] Guard #10 begins shift")
   (parse-record "[1518-11-01 00:05] falls asleep") ;
@@ -127,5 +139,9 @@
                               {:year 2024, :month 6, :day 8, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
                               {:year 2024, :month 6, :day 8, :hour 0, :minute 20, :guard 10, :action "wakes up"}
                               {:year 2024, :month 6, :day 8, :hour 0, :minute 50, :guard 10, :action "falls asleep"}
-                              {:year 2024, :month 6, :day 8, :hour 0, :minute 55, :guard 10, :action "wakes up"}]]))
+                              {:year 2024, :month 6, :day 8, :hour 0, :minute 55, :guard 10, :action "wakes up"}]])
+  (most-asleep-min-x-id [10 {5 2, 6 1, 7 1}]) ; 50
+  )
+
+
 
