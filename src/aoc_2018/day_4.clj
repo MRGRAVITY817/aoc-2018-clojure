@@ -65,12 +65,66 @@
                [year month day hour minute]))
            records))
 
+(defn partition-linked
+  "Partition records into linked pairs.
+
+   For example:
+   ```
+   [1 2 3 4 ...] => [(1 2) (2 3) (3 4) ...]
+   ```
+   "
+  [records]
+  (loop [records records
+         partitions []]
+    (if (= (count records) 1)
+      partitions
+      (recur (rest records)
+             (conj partitions (take 2 records))))))
+
+(defn records->sleep-record
+  "Convert records into a sleep record.
+   The sleep record is a map, which key is the minute the guard slept and the value is the frequency.
+
+   For example, if the guard slept at minute 5 and 6, the sleep record would be:
+   ```
+   {5 1, 6 1}
+   ```
+  "
+  [records]
+  (->> records
+       partition-linked
+       (filter (fn [[start end]]
+                 (and (= (:action start) "falls asleep")
+                      (= (:action end) "wakes up"))))
+       (map (fn [[start end]]
+              (range (:minute start) (:minute end))))
+       (apply concat)
+       frequencies))
+
+#_(defn laziest-guard-record
+    "Return the records of the guard that sleeps the most from given list of records."
+    [records]
+    (let [sorted-records   (sort-chronologically records)
+          guards           (->> sorted-records
+                                (group-by :guard)
+                                (map (fn [[guard records]] [guard (records->sleep-record records)])))]
+
+      (first guards)))
+
 (comment
   (parse-record "[1518-11-01 00:00] Guard #10 begins shift")
   (parse-record "[1518-11-01 00:05] falls asleep") ;
-  (parse-records "[2024-06-07 00:00] Guard #10 begins shift\n[2024-06-07 00:05] falls asleep"))
+  (parse-records "[2024-06-07 00:00] Guard #10 begins shift\n[2024-06-07 00:05] falls asleep")
+  (first (group-by :guard (parse-records "[2024-06-07 00:00] Guard #10 begins shift\n[2024-06-07 00:05] falls asleep\n[2024-06-07 00:25] wakes up\n[2024-06-07 00:30] falls asleep\n[2024-06-07 00:55] wakes up\n[2024-06-08 00:00] Guard #99 begins shift\n[2024-06-08 00:30] falls asleep\n[2024-06-08 00:55] wakes up")))
 
-
-
-
+  (partition-linked (range 10)) ; [(0 1) (1 2) (2 3) (3 4) (4 5) (5 6) (6 7) (7 8) (8 9)]
+  (records->sleep-record [10 [{:year 2024, :month 6, :day 7, :hour 0, :minute 0, :guard 10, :action "begins shift"}
+                              {:year 2024, :month 6, :day 7, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
+                              {:year 2024, :month 6, :day 7, :hour 0, :minute 25, :guard 10, :action "wakes up"}
+                              {:year 2024, :month 6, :day 7, :hour 0, :minute 30, :guard 10, :action "falls asleep"}
+                              {:year 2024, :month 6, :day 7, :hour 0, :minute 55, :guard 10, :action "wakes up"}
+                              {:year 2024, :month 6, :day 8, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
+                              {:year 2024, :month 6, :day 8, :hour 0, :minute 20, :guard 10, :action "wakes up"}
+                              {:year 2024, :month 6, :day 8, :hour 0, :minute 50, :guard 10, :action "falls asleep"}
+                              {:year 2024, :month 6, :day 8, :hour 0, :minute 55, :guard 10, :action "wakes up"}]]))
 

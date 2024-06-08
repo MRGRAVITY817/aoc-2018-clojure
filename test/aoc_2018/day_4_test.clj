@@ -45,18 +45,30 @@
                                     {:year 2024, :month 6, :day 8, :hour 0, :minute 30, :guard 99, :action "falls asleep"}
                                     {:year 2024, :month 6, :day 7, :hour 0, :minute 25, :guard 10, :action "wakes up"}
                                     {:year 2024, :month 6, :day 8, :hour 0, :minute 55, :guard 99, :action "wakes up"}]))))
+(deftest test-partition-linked
+  (is (= '[(0 1) (1 2) (2 3) (3 4) (4 5) (5 6) (6 7) (7 8) (8 9)]
+         (sut/partition-linked (range 10)))))
+
+(deftest test-records->sleep-record
+  (testing "sleep record"
+    (is (= {5 2, 6 2, 7 1, 8 1}
+           (sut/records->sleep-record [{:year 2024, :month 6, :day 7, :hour 0, :minute 0, :guard 10, :action "begins shift"}
+                                       {:year 2024, :month 6, :day 7, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
+                                       {:year 2024, :month 6, :day 7, :hour 0, :minute 7, :guard 10, :action "wakes up"}
+                                       {:year 2024, :month 6, :day 8, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
+                                       {:year 2024, :month 6, :day 8, :hour 0, :minute 9, :guard 10, :action "wakes up"}])))))
 
 #_(deftest test-laziest-guard
     (testing "laziest guard"
       (is (= 240
-             (sut/laziest-guard [{:year 2024, :month 6, :day 7, :hour 0, :minute 0, :guard 10, :action "begins shift"}
-                                 {:year 2024, :month 6, :day 7, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
-                                 {:year 2024, :month 6, :day 7, :hour 0, :minute 25, :guard 10, :action "wakes up"}
-                                 {:year 2024, :month 6, :day 7, :hour 0, :minute 30, :guard 10, :action "falls asleep"}
-                                 {:year 2024, :month 6, :day 7, :hour 0, :minute 55, :guard 10, :action "wakes up"}
+             (sut/laziest-guard-record [{:year 2024, :month 6, :day 7, :hour 0, :minute 0, :guard 10, :action "begins shift"}
+                                        {:year 2024, :month 6, :day 7, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
+                                        {:year 2024, :month 6, :day 7, :hour 0, :minute 25, :guard 10, :action "wakes up"}
+                                        {:year 2024, :month 6, :day 7, :hour 0, :minute 30, :guard 10, :action "falls asleep"}
+                                        {:year 2024, :month 6, :day 7, :hour 0, :minute 55, :guard 10, :action "wakes up"}
                                ;; Guard 10: Slept total 45 mins
-                                 {:year 2024, :month 6, :day 8, :hour 0, :minute 0, :guard 99, :action "begins shift"}
-                                 {:year 2024, :month 6, :day 8, :hour 0, :minute 30, :guard 99, :action "falls asleep"}
-                                 {:year 2024, :month 6, :day 8, :hour 0, :minute 55, :guard 99, :action "wakes up"}
+                                        {:year 2024, :month 6, :day 8, :hour 0, :minute 0, :guard 99, :action "begins shift"}
+                                        {:year 2024, :month 6, :day 8, :hour 0, :minute 30, :guard 99, :action "falls asleep"}
+                                        {:year 2024, :month 6, :day 8, :hour 0, :minute 55, :guard 99, :action "wakes up"}
                                ;; Guard 99: Slept total 25 mins
-                                 ])))))
+                                        ])))))
