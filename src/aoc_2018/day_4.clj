@@ -87,7 +87,8 @@
 
    For example, if the guard #10 slept at minute 5 and 6, the sleep record would be:
    ```
-   [{10 5} {10 6}]
+   [{:guard 10, :minute 5} 
+    {:guard 10, :minute 6}]
    ```
   "
   [[guard records]]
@@ -100,20 +101,30 @@
                  (->> (range (:minute start) (:minute end))
                       (map (fn [minute] {:guard guard, :minute minute})))))))
 
+(defn most-frequent
+  "Return the most frequent element from given collection."
+  [coll]
+  (->> coll
+       frequencies
+       (apply max-key val)
+       key))
+
+(comment
+  (most-frequent [5 2 6 1 7 2 8 1 30 1]) ; 1
+  )
+
 (defn laziest-guard
   "Return the sleep record of the guard that sleeps the most from given list of records."
   [records]
-  (let [sorted-guards (->> records
-                           (group-by :guard)
-                           (map (fn [[guard records]] [guard
-                                                       (-> records
-                                                           sort-chronologically
-                                                           records->sleep-record)]))
-                           (sort-by (fn [[_ sleep-record]] (apply + (vals sleep-record))))
-                           (group-by (fn [[_ sleep-record]] (apply + (vals sleep-record)))))]
+  (let [guards (->> records
+                    sort-chronologically
+                    (group-by :guard)
+                    (mapcat records->sleep-record))
+        laziest-guard (->> guards
+                           (map :guard)
+                           most-frequent)]
 
-    (->> sorted-guards last last
-         (sort-by first) first)))
+    (filter #(= (:guard %) laziest-guard) guards)))
 
 (defn most-asleep-min-x-id
   "Return the multiplied value between 
