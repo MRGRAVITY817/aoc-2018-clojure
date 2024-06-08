@@ -57,8 +57,20 @@
                  (conj records (assoc record :guard guard))
                  guard))))))
 
+(defn sort-chronologically
+  "Sort records chronologically."
+  [records]
+  (sort-by (fn [record]
+             (let [{:keys [year month day hour minute]} record]
+               [year month day hour minute]))
+           records))
+
 (comment
   (parse-record "[1518-11-01 00:00] Guard #10 begins shift")
   (parse-record "[1518-11-01 00:05] falls asleep") ;
   (parse-records "[2024-06-07 00:00] Guard #10 begins shift\n[2024-06-07 00:05] falls asleep"))
+
+
+
+
 
