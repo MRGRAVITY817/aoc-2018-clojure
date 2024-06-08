@@ -35,7 +35,7 @@
             j (range h)]
         {:id id :coords [(+ x i) (+ y j)]}))))
 
-(m/=> parse-and-concat [:=> [:cat :string] [:sequential Coordinate]])
+(m/=> parse-and-concat [:=> [:cat :string] Claim])
 (defn parse-and-concat
   "Parse and concatenate a list of claims."
   [input]
@@ -43,7 +43,7 @@
        str/split-lines
        (mapcat parse-claim)))
 
-(m/=> count-overlapping-areas [:=> [:cat [:sequential Coordinate]] :int])
+(m/=> count-overlapping-areas [:=> [:cat Claim] :int])
 (defn count-overlapping-areas
   "Count areas that has been overlapped by more than two claims."
   [areas]
@@ -72,7 +72,7 @@
        keys
        set))
 
-(m/=> isolated-claim [:=> [:cat [:sequential Claim]] :int])
+(m/=> isolated-claim [:=> [:cat [:sequential Claim]] [:maybe :int]])
 (defn isolated-claim
   "Find and return the id of first claim that is not overlapped by any other claims."
   [claims]
@@ -132,10 +132,4 @@
        flatten
        #_(map :id)
        #_first))
-
-
-
-
-
-
 
