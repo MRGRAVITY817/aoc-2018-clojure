@@ -32,10 +32,6 @@
             {:year 2024, :month 6, :day 8, :hour 0, :minute 55, :guard 99, :action "wakes up"}]
            (sut/parse-records "[2024-06-07 00:00] Guard #10 begins shift\n[2024-06-07 00:05] falls asleep\n[2024-06-07 00:25] wakes up\n[2024-06-08 00:00] Guard #99 begins shift\n[2024-06-08 00:30] falls asleep\n[2024-06-08 00:55] wakes up")))))
 
-(deftest test-partition-linked
-  (is (= '[(0 1) (1 2) (2 3) (3 4) (4 5) (5 6) (6 7) (7 8) (8 9)]
-         (sut/partition-linked (range 10)))))
-
 (deftest test-records->sleep-record
   (testing "sleep record"
     (is (= '({:guard 10, :minute 5}

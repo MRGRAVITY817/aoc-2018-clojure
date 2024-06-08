@@ -1,8 +1,32 @@
 (ns aoc-2018.day-4
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [aoc-2018.utils :as utils]
+            [malli.core :as m]
+            [malli.dev :as mdev]))
+
+(mdev/start!)
+
+(def Record
+  "Record is a map that contains the timestamp, guard id, and action."
+  [:map
+   [:year :int]
+   [:month :int]
+   [:day :int]
+   [:hour :int]
+   [:minute :int]
+   [:guard [:maybe :int]]
+   [:action :string]])
+
+(def SleepRecord
+  "SleepRecord is a vector of {guard-id sleeping-minute} map."
+  [:vector
+   [:map
+    [:guard :int]
+    [:minute :int]]])
 
 (def re #"\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})\] (Guard #\d+ )?(.*)")
 
+(m/=> parse-record [:=> [:cat :string] Record])
 (defn parse-record
   "Parse a record into a `Record` map.
    The record basically contains the year, month, day, hour, minute and action.
@@ -31,6 +55,7 @@
                              Integer/parseInt))
      :action action}))
 
+(m/=> parse-records [:=> [:cat :string] [:sequential Record]])
 (defn parse-records
   "Parse records from given text input.
    If there's a record that doesn't contain the guard id, 
@@ -57,22 +82,7 @@
                  (conj records (assoc record :guard guard))
                  guard))))))
 
-(defn partition-linked
-  "Partition records into linked pairs.
-
-   For example:
-   ```
-   [1 2 3 4 ...] => [(1 2) (2 3) (3 4) ...]
-   ```
-   "
-  [records]
-  (loop [records records
-         partitions []]
-    (if (= (count records) 1)
-      partitions
-      (recur (rest records)
-             (conj partitions (take 2 records))))))
-
+(m/=> records->sleep-record [:=> [:cat [:sequential Record]] SleepRecord])
 (defn records->sleep-record
   "Convert records into a sleep record.
    The sleep record is a seq of {guard-id sleeping-minute} map.
@@ -85,7 +95,7 @@
   "
   [records]
   (->> records
-       partition-linked
+       utils/partition-linked
        (filter (fn [[start end]]
                  (and (= (:action start) "falls asleep")
                       (= (:action end) "wakes up"))))
@@ -93,18 +103,7 @@
                  (->> (range (:minute start) (:minute end))
                       (map (fn [minute] {:guard (:guard start), :minute minute})))))))
 
-(defn most-frequent
-  "Return the most frequent element from given collection."
-  [coll]
-  (->> coll
-       frequencies
-       (apply max-key val)
-       key))
-
-(comment
-  (most-frequent [5 2 6 1 7 2 8 1 30 1]) ; 1
-  )
-
+(m/=> laziest-guard [:=> [:cat [:sequential Record]] SleepRecord])
 (defn laziest-guard
   "Return the sleep record of the guard that sleeps the most from given list of records."
   [records]
@@ -113,16 +112,17 @@
                            (mapcat (fn [[_ records]] (records->sleep-record records))))
         laziest-guard (->> guards
                            (map :guard)
-                           most-frequent)]
+                           utils/most-frequent)]
     (filter #(= (:guard %) laziest-guard) guards)))
 
+(m/=> most-asleep-min-x-id [:=> [:cat SleepRecord] :int])
 (defn most-asleep-min-x-id
   "Return the multiplied value between 
    - guard-id
    - the minute the guard was most asleep 
    ... from given sleep record vector."
   [sleep-record]
-  (let [{:keys [guard minute]} (most-frequent sleep-record)]
+  (let [{:keys [guard minute]} (utils/most-frequent sleep-record)]
     (* guard minute)))
 
 (defn day-4-part-1
@@ -147,7 +147,6 @@
   (parse-records "[2024-06-07 00:00] Guard #10 begins shift\n[2024-06-07 00:05] falls asleep")
   (first (group-by :guard (parse-records "[2024-06-07 00:00] Guard #10 begins shift\n[2024-06-07 00:05] falls asleep\n[2024-06-07 00:25] wakes up\n[2024-06-07 00:30] falls asleep\n[2024-06-07 00:55] wakes up\n[2024-06-08 00:00] Guard #99 begins shift\n[2024-06-08 00:30] falls asleep\n[2024-06-08 00:55] wakes up")))
 
-  (partition-linked (range 10)) ; [(0 1) (1 2) (2 3) (3 4) (4 5) (5 6) (6 7) (7 8) (8 9)]
   (records->sleep-record [10 [{:year 2024, :month 6, :day 7, :hour 0, :minute 0, :guard 10, :action "begins shift"}
                               {:year 2024, :month 6, :day 7, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
                               {:year 2024, :month 6, :day 7, :hour 0, :minute 25, :guard 10, :action "wakes up"}
