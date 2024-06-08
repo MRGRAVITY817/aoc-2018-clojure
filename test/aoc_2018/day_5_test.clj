@@ -16,3 +16,10 @@
     (is (= [] (sut/react "abBA")))
     (is (= [\a \b \A \B] (sut/react "abAB")))
     (is (= [\d \a \b \C \B \A \c \a \D \A] (sut/react "dabAcCaCBAcCcaDA")))))
+
+(deftest test-remove-alphabet
+  (testing "remove \\a/\\A"
+    (is (= "bB"
+           (sut/remove-alphabet "abBA" \a)))
+    (is (= "dbcCCBcCcD"
+           (sut/remove-alphabet "dabAcCaCBAcCcaDA" \a)))))

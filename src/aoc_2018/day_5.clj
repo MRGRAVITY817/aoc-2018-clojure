@@ -46,6 +46,21 @@
   (-> filename parse-input ;; parsing
       react count))        ;; main logic
 
+(defn remove-alphabet
+  "Remove all instances of the given alphabet from the input string.
+   It will remove both lower and upper case of the given alphabet.
+
+  Examples:
+  ```
+  (remove-alphabet \"abBA\" \\a) => \"bB\"
+  (remove-alphabet \"dabAcCaCBAcCcaDA\" \\a) => \"dbcCCBcCcD\"
+  ```
+  "
+  [input alphabet]
+  (-> input
+      (str/replace (str/lower-case alphabet) "")
+      (str/replace (str/upper-case alphabet) "")))
+
 (comment
   (day-5-part-1 "resources/day_5_input.txt") ; 10888
 
@@ -55,5 +70,7 @@
   (react "abAB") ; [\a \b \A \B]
   (react "dabAcCaCBAcCcaDA") ; [\d \a \b \C \B \A \c \a \D \A]
   )
+
+
 
 
