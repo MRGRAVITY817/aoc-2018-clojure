@@ -101,15 +101,16 @@
        (apply concat)
        frequencies))
 
-#_(defn laziest-guard-record
-    "Return the records of the guard that sleeps the most from given list of records."
-    [records]
-    (let [sorted-records   (sort-chronologically records)
-          guards           (->> sorted-records
-                                (group-by :guard)
-                                (map (fn [[guard records]] [guard (records->sleep-record records)])))]
+(defn laziest-guard
+  "Return the sleep record of the guard that sleeps the most from given list of records."
+  [records]
+  (let [sorted-records   (sort-chronologically records)
+        guards           (->> sorted-records
+                              (group-by :guard)
+                              (map (fn [[guard records]] [guard (records->sleep-record records)]))
+                              (sort-by (fn [[_ sleep-record]] (apply + (vals sleep-record)))))]
 
-      (first guards)))
+    (last guards)))
 
 (comment
   (parse-record "[1518-11-01 00:00] Guard #10 begins shift")
