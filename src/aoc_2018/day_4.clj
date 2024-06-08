@@ -31,5 +31,34 @@
                              Integer/parseInt))
      :action action}))
 
+(defn parse-records
+  "Parse records from given text input.
+   If there's a record that doesn't contain the guard id, 
+   this function will try to find the guard id from the previous record.
 
+   Example:
+   ```
+   (parse-records \"2024-06-07 00:00 Guard #10 begins shift\n
+                   2024-06-07 00:05 falls asleep\")
+   ;; [{:year 2024, :month 06, :day 07, :hour 0, :minute 0, :guard 10, :action \"begins shift\"}
+   ;;  {:year 2024, :month 06, :day 07, :hour 0, :minute 5, :guard 10, :action \"falls asleep\"}]
+   ```
+  "
+  [input]
+  (let [lines (str/split-lines input)]
+    (loop [lines   lines
+           records []
+           guard   nil]
+      (if (empty? lines)
+        records
+        (let [record (parse-record (first lines))
+              guard  (or (:guard record) guard)]
+          (recur (rest lines)
+                 (conj records (assoc record :guard guard))
+                 guard))))))
+
+(comment
+  (parse-record "[1518-11-01 00:00] Guard #10 begins shift")
+  (parse-record "[1518-11-01 00:05] falls asleep") ;
+  (parse-records "[2024-06-07 00:00] Guard #10 begins shift\n[2024-06-07 00:05] falls asleep"))
 
