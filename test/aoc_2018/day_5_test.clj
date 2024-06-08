@@ -9,3 +9,10 @@
   (testing "not reactable"
     (is (not (sut/reactable? \a \a)))
     (is (not (sut/reactable? \B \a)))))
+
+(deftest test-react
+  (testing "react"
+    (is (= [] (sut/react "aA")))
+    (is (= [] (sut/react "abBA")))
+    (is (= [\a \b \A \B] (sut/react "abAB")))
+    (is (= [\d \a \b \C \B \A \c \a \D \A] (sut/react "dabAcCaCBAcCcaDA")))))
