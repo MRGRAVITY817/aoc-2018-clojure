@@ -83,7 +83,7 @@
     {:guard 10, :minute 6}]
    ```
   "
-  [[guard records]]
+  [records]
   (->> records
        partition-linked
        (filter (fn [[start end]]
@@ -91,7 +91,7 @@
                       (= (:action end) "wakes up"))))
        (mapcat (fn [[start end]]
                  (->> (range (:minute start) (:minute end))
-                      (map (fn [minute] {:guard guard, :minute minute})))))))
+                      (map (fn [minute] {:guard (:guard start), :minute minute})))))))
 
 (defn most-frequent
   "Return the most frequent element from given collection."
@@ -110,7 +110,7 @@
   [records]
   (let [guards        (->> records
                            (group-by :guard)
-                           (mapcat records->sleep-record))
+                           (mapcat (fn [[_ records]] (records->sleep-record records))))
         laziest-guard (->> guards
                            (map :guard)
                            most-frequent)]
@@ -131,8 +131,16 @@
   (-> filename slurp parse-records         ;; parsing
       laziest-guard most-asleep-min-x-id)) ;; main logic
 
+(defn day-4-part-2
+  "Calculate the ID of the guard that is most frequently asleep on the same minute, 
+   multiplied by the minute."
+  [filename]
+  (->> filename slurp parse-records                 ;; parsing
+       records->sleep-record most-asleep-min-x-id)) ;; main logic      
+
 (comment
   (day-4-part-1 "resources/day_4_input.txt") ; 39584
+  (day-4-part-2 "resources/day_4_input.txt")
   ;; helper functions
   (parse-record "[1518-11-01 00:00] Guard #10 begins shift")
   (parse-record "[1518-11-01 00:05] falls asleep") ;

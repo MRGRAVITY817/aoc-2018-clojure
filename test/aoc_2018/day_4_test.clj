@@ -45,11 +45,11 @@
              {:guard 10, :minute 7}
              {:guard 10, :minute 8})
            (sut/records->sleep-record
-            [10 [{:year 2024, :month 6, :day 7, :hour 0, :minute 0, :guard 10, :action "begins shift"}
-                 {:year 2024, :month 6, :day 7, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
-                 {:year 2024, :month 6, :day 7, :hour 0, :minute 7, :guard 10, :action "wakes up"}
-                 {:year 2024, :month 6, :day 8, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
-                 {:year 2024, :month 6, :day 8, :hour 0, :minute 9, :guard 10, :action "wakes up"}]])))))
+            [{:year 2024, :month 6, :day 7, :hour 0, :minute 0, :guard 10, :action "begins shift"}
+             {:year 2024, :month 6, :day 7, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
+             {:year 2024, :month 6, :day 7, :hour 0, :minute 7, :guard 10, :action "wakes up"}
+             {:year 2024, :month 6, :day 8, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
+             {:year 2024, :month 6, :day 8, :hour 0, :minute 9, :guard 10, :action "wakes up"}])))))
 
 (deftest test-laziest-guard
   (testing "laziest guard"
@@ -59,22 +59,23 @@
              {:guard 10, :minute 6}
              {:guard 10, :minute 7}
              {:guard 10, :minute 8})
-           (sut/laziest-guard [;; Guard 10: Slept total 6 mins
-                               {:year 2024, :month 6, :day 7, :hour 0, :minute 0, :guard 10, :action "begins shift"}
-                               {:year 2024, :month 6, :day 7, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
-                               {:year 2024, :month 6, :day 7, :hour 0, :minute 7, :guard 10, :action "wakes up"}
-                               {:year 2024, :month 6, :day 8, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
-                               {:year 2024, :month 6, :day 8, :hour 0, :minute 9, :guard 10, :action "wakes up"}
-                               ;; Guard 99: Slept total 2 mins
-                               {:year 2024, :month 6, :day 8, :hour 0, :minute 0, :guard 99, :action "begins shift"}
-                               {:year 2024, :month 6, :day 8, :hour 0, :minute 30, :guard 99, :action "falls asleep"}
-                               {:year 2024, :month 6, :day 8, :hour 0, :minute 32, :guard 99, :action "wakes up"}
-                               ;; Guard 20: Slept total 3 mins
-                               {:year 2024, :month 6, :day 9, :hour 0, :minute 0, :guard 20, :action "begins shift"}
-                               {:year 2024, :month 6, :day 9, :hour 0, :minute 5, :guard 20, :action "falls asleep"}
-                               {:year 2024, :month 6, :day 9, :hour 0, :minute 7, :guard 20, :action "wakes up"}
-                               {:year 2024, :month 6, :day 9, :hour 0, :minute 30, :guard 20, :action "falls asleep"}
-                               {:year 2024, :month 6, :day 9, :hour 0, :minute 31, :guard 20, :action "wakes up"}])))))
+           (sut/laziest-guard
+            [;; Guard 10: Slept total 6 mins
+             {:year 2024, :month 6, :day 7, :hour 0, :minute 0, :guard 10, :action "begins shift"}
+             {:year 2024, :month 6, :day 7, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
+             {:year 2024, :month 6, :day 7, :hour 0, :minute 7, :guard 10, :action "wakes up"}
+             {:year 2024, :month 6, :day 8, :hour 0, :minute 5, :guard 10, :action "falls asleep"}
+             {:year 2024, :month 6, :day 8, :hour 0, :minute 9, :guard 10, :action "wakes up"}
+             ;; Guard 99: Slept total 2 mins
+             {:year 2024, :month 6, :day 8, :hour 0, :minute 0, :guard 99, :action "begins shift"}
+             {:year 2024, :month 6, :day 8, :hour 0, :minute 30, :guard 99, :action "falls asleep"}
+             {:year 2024, :month 6, :day 8, :hour 0, :minute 32, :guard 99, :action "wakes up"}
+             ;; Guard 20: Slept total 3 mins
+             {:year 2024, :month 6, :day 9, :hour 0, :minute 0, :guard 20, :action "begins shift"}
+             {:year 2024, :month 6, :day 9, :hour 0, :minute 5, :guard 20, :action "falls asleep"}
+             {:year 2024, :month 6, :day 9, :hour 0, :minute 7, :guard 20, :action "wakes up"}
+             {:year 2024, :month 6, :day 9, :hour 0, :minute 30, :guard 20, :action "falls asleep"}
+             {:year 2024, :month 6, :day 9, :hour 0, :minute 31, :guard 20, :action "wakes up"}])))))
 
 (deftest test-most-asleep-min-x-id
   (is (= (* 10 5)
