@@ -83,34 +83,37 @@
 
 (defn records->sleep-record
   "Convert records into a sleep record.
-   The sleep record is a map, which key is the minute the guard slept and the value is the frequency.
+   The sleep record is a seq of {guard-id sleeping-minute} map.
 
-   For example, if the guard slept at minute 5 and 6, the sleep record would be:
+   For example, if the guard #10 slept at minute 5 and 6, the sleep record would be:
    ```
-   {5 1, 6 1}
+   [{10 5} {10 6}]
    ```
   "
-  [records]
+  [[guard records]]
   (->> records
        partition-linked
        (filter (fn [[start end]]
                  (and (= (:action start) "falls asleep")
                       (= (:action end) "wakes up"))))
-       (map (fn [[start end]]
-              (range (:minute start) (:minute end))))
-       (apply concat)
-       frequencies))
+       (mapcat (fn [[start end]]
+                 (->> (range (:minute start) (:minute end))
+                      (map (fn [minute] {:guard guard, :minute minute})))))))
 
 (defn laziest-guard
   "Return the sleep record of the guard that sleeps the most from given list of records."
   [records]
-  (let [sorted-records   (sort-chronologically records)
-        guards           (->> sorted-records
-                              (group-by :guard)
-                              (map (fn [[guard records]] [guard (records->sleep-record records)]))
-                              (sort-by (fn [[_ sleep-record]] (apply + (vals sleep-record)))))]
+  (let [sorted-guards (->> records
+                           (group-by :guard)
+                           (map (fn [[guard records]] [guard
+                                                       (-> records
+                                                           sort-chronologically
+                                                           records->sleep-record)]))
+                           (sort-by (fn [[_ sleep-record]] (apply + (vals sleep-record))))
+                           (group-by (fn [[_ sleep-record]] (apply + (vals sleep-record)))))]
 
-    (last guards)))
+    (->> sorted-guards last last
+         (sort-by first) first)))
 
 (defn most-asleep-min-x-id
   "Return the multiplied value between 
@@ -119,12 +122,31 @@
    ... from given [guard-id sleep-record] vector."
   [[guard-id sleep-record]]
   (let [minute (->> sleep-record
-                    (sort-by val)
-                    last
-                    key)]
+                    (group-by val)
+                    (apply max-key key)
+                    val sort first first)]
     (* guard-id minute)))
 
 (comment
+  (->> {5 2, 6 1, 7 2, 8 1, 30 1}
+       (group-by val)
+       ;; largest key
+       (apply max-key key)
+       #_val
+       #_sort
+       #_first
+       #_first) ; 3
+  )
+
+(defn day-4-part-1
+  "Calculate the ID of the laziest guard multiplied by the minute the guard was most asleep."
+  [filename]
+  (-> filename slurp parse-records         ;; parsing
+      laziest-guard most-asleep-min-x-id)) ;; main logic
+
+(comment
+  (day-4-part-1 "resources/day_4_input.txt")
+  ;; helper functions
   (parse-record "[1518-11-01 00:00] Guard #10 begins shift")
   (parse-record "[1518-11-01 00:05] falls asleep") ;
   (parse-records "[2024-06-07 00:00] Guard #10 begins shift\n[2024-06-07 00:05] falls asleep")
