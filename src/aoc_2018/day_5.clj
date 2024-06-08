@@ -35,7 +35,21 @@
                                (recur acc chars))
          :else               (recur (conj acc c1) (cons c2 chars)))))
 
+(defn- parse-input
+  "Read the input file and return the content as a string."
+  [filename]
+  (-> filename slurp str/trim))
+
+(defn day-5-part-1
+  "Return the length of the polymer after fully reacting."
+  [filename]
+  (-> filename parse-input ;; parsing
+      react count))        ;; main logic
+
 (comment
+  (day-5-part-1 "resources/day_5_input.txt") ; 10888
+
+  ;; helper functions
   (react "aA") ; []
   (react "abBA") ; []
   (react "abAB") ; [\a \b \A \B]
