@@ -1,5 +1,5 @@
 (ns aoc-2018.day-5
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as string]))
 
 (defn reactable?
   "Return true if the two characters are the same letter but different case.
@@ -14,7 +14,7 @@
   "
   [a b]
   (and (not= a b)
-       (= (str/lower-case a) (str/lower-case b))))
+       (= (string/lower-case a) (string/lower-case b))))
 
 (defn react
   "Remove all adjacent pairs of letters that are 'reactable'.
@@ -38,7 +38,7 @@
 (defn- parse-input
   "Read the input file and return the content as a string."
   [filename]
-  (-> filename slurp str/trim))
+  (-> filename slurp string/trim))
 
 (defn day-5-part-1
   "Return the length of the polymer after fully reacting."
@@ -58,8 +58,8 @@
   "
   [input alphabet]
   (-> input
-      (str/replace (str/lower-case alphabet) "")
-      (str/replace (str/upper-case alphabet) "")))
+      (string/replace (string/lower-case alphabet) "")
+      (string/replace (string/upper-case alphabet) "")))
 
 (defn day-5-part-2
   "Return the minimum length of the polymer after removing the alphabet and reacting fully."
