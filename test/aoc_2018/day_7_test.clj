@@ -14,4 +14,13 @@
     (is (= "A" (sut/next-step [["C" "A"] ["C" "F"]])))
     (is (= "A" (sut/next-step [["C" "F"] ["C" "A"] ["C" "B"]])))))
 
+(deftest test-no-previous-steps?
+  (is (sut/no-previous-steps? "C" #{["C" "A"] ["C" "F"]}))
+  (is (not (sut/no-previous-steps? "A" #{["C" "A"] ["C" "F"]}))))
+
+(deftest test-graph-head
+  (is (= "C" (sut/graph-head #{["C" "A"] ["C" "F"]})))
+  (is (= "C" (sut/graph-head #{["C" "F"] ["C" "A"] ["F" "E"]})))
+  (is (= "C" (sut/graph-head #{["C" "A"] ["C" "F"] ["A" "B"] ["A" "D"] ["B" "E"] ["D" "E"] ["F" "E"]}))))
+
 
