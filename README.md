@@ -17,3 +17,4 @@ $ clj -M:test
 - [x] Day 3
 - [x] Day 4
 - [x] Day 5
+- [ ] Day 7
