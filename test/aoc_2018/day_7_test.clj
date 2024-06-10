@@ -7,3 +7,11 @@
   (is (= ["C" "F"] (sut/parse-line "Step C must be finished before step F can begin.")))
   (is (= ["A" "B"] (sut/parse-line "Step A must be finished before step B can begin."))))
 
+(deftest test-next-step
+  (testing "1 input"
+    (is (= "A" (sut/next-step [["C" "A"]]))))
+  (testing "2 >= inputs"
+    (is (= "A" (sut/next-step [["C" "A"] ["C" "F"]])))
+    (is (= "A" (sut/next-step [["C" "F"] ["C" "A"] ["C" "B"]])))))
+
+
