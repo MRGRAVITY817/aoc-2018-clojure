@@ -31,6 +31,15 @@
                                      {:current "C" :next "A"}
                                      {:current "C" :next "F"}]))))
 
+(deftest test-order-steps
+  (testing "1 connection"
+    (is (= ["B" "A"]
+           (sut/order-steps {"A" #{"B"}}  #{"A" "B"}))))
+  (testing "more connections"
+    (is (= ["C" "A" "B" "D" "F" "E"]
+           (sut/order-steps {"A" #{"C"}, "F" #{"C"}, "B" #{"A"}, "D" #{"A"}, "E" #{"F" "B" "D"}}
+                            #{"C" "F" "B" "A" "D" "E"})))))
+
 (deftest test-next-step
   (testing "1 input"
     (is (= "A" (sut/next-step [["C" "A"]]))))

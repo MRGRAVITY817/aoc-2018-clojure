@@ -32,15 +32,25 @@
                (assoc deps next (conj (deps next #{}) current))
                (conj steps current next))))))
 
+(defn order-steps
+  "Return the order of steps that must be taken to complete all steps."
+  [deps steps]
+  (loop [done  []
+         steps steps]
+    (if (empty? steps)
+      done
+      (let [candidates (filter #(subset? (deps %) (set done)) steps)
+            head       (first (sort candidates))]
+        (recur (conj done head)
+               (disj steps head))))))
+
 (comment
-  (->> "resources/day_7_sample.txt"
-       (slurp)
-       (string/split-lines)
-       (map parse-line)
-       (lines->deps-and-steps)))
-; {:deps
-;  {"A" #{"C"}, "F" #{"C"}, "B" #{"A"}, "D" #{"A"}, "E" #{"F" "B" "D"}},
-;  :steps #{"E" "C" "F" "B" "A" "D"}}
+  (let [{:keys [deps steps]} (->> "resources/day_7_sample.txt"
+                                  (slurp)
+                                  (string/split-lines)
+                                  (map parse-line)
+                                  (lines->deps-and-steps))]
+    (order-steps deps steps)))
 
 (defn next-step
   "Given a list of connections from a specific step to another step, 
@@ -124,5 +134,7 @@
   (graph-head #{["C" "F"] ["C" "A"] ["F" "E"]}) ; "C"
   (graph-head #{["C" "A"] ["C" "F"] ["A" "B"] ["A" "D"] ["B" "E"] ["D" "E"] ["F" "E"]}) ; "C"
   )
+
+
 
 
