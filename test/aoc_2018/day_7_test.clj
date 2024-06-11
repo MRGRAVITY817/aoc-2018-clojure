@@ -23,4 +23,13 @@
   (is (= "C" (sut/graph-head #{["C" "F"] ["C" "A"] ["F" "E"]})))
   (is (= "C" (sut/graph-head #{["C" "A"] ["C" "F"] ["A" "B"] ["A" "D"] ["B" "E"] ["D" "E"] ["F" "E"]}))))
 
+(deftest test-step-set
+  (is (= #{"A" "C"}
+         (sut/step-set #{["C" "A"]})))
+  (is (= #{"A" "C" "F"}
+         (sut/step-set #{["C" "A"] ["C" "F"]})))
+  (is (= #{"A" "B" "C" "D" "E" "F"}
+         (sut/step-set #{["C" "A"] ["C" "F"] ["A" "B"] ["A" "D"] ["B" "E"] ["D" "E"]})))
+  (is (= #{"A" "B" "C" "D" "E" "F"}
+         (sut/step-set #{["C" "A"] ["C" "F"] ["A" "B"] ["A" "D"] ["B" "E"] ["D" "E"] ["F" "E"]}))))
 

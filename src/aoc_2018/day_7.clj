@@ -49,6 +49,17 @@
        (sort)
        (first)))
 
+(defn step-set
+  "Get a set of all steps from the given connections (graph).
+
+   For example, given a set of connections `#{[\"C\" \"A\"] [\"C\" \"F\"] [\"F\" \"E\"]}`,
+   we return a set of steps #{\"A\" \"C\" \"E\" \"F\"}.
+  "
+  [connections]
+  (->> connections
+       (mapcat identity)
+       (set)))
+
 (comment
   (parse-line "Step C must be finished before step A can begin.") ; ["C" "A"]
   (next-step [["C" "A"]]) ; "A"
@@ -60,3 +71,5 @@
   (graph-head #{["C" "F"] ["C" "A"] ["F" "E"]}) ; "C"
   (graph-head #{["C" "A"] ["C" "F"] ["A" "B"] ["A" "D"] ["B" "E"] ["D" "E"] ["F" "E"]}) ; "C"
   )
+
+
