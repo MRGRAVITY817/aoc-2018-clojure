@@ -44,7 +44,20 @@
         (recur (conj done head)
                (disj steps head))))))
 
+(defn day-7-part-1
+  [filename]
+  (let [{:keys [deps steps]} (->> filename
+                                  (slurp)
+                                  (string/split-lines)
+                                  (map parse-line)
+                                  (lines->deps-and-steps))]
+    (->> (order-steps deps steps)
+         (apply str))))
+
 (comment
+  (day-7-part-1 "resources/day_7_sample.txt") ; "CABDFE"
+  (day-7-part-1 "resources/day_7_input.txt")  ; "OCPUEFIXHRGWDZABTQJYMNKVSL"
+
   (let [{:keys [deps steps]} (->> "resources/day_7_sample.txt"
                                   (slurp)
                                   (string/split-lines)
