@@ -83,3 +83,9 @@
           :updated-status    ["A" "B" "C" "D" "E"]
           :updated-steps     #{}}
          (sut/give-works '(0 1) ["A" "B"] [0 1 1 1 1] [nil nil "C" "D" "E"] #{"A" "B"} 60))))
+
+(deftest test-schedule-workers
+  (is (= 15
+         (sut/schedule-workers 2 0
+                               {"A" #{"C"}, "F" #{"C"}, "B" #{"A"}, "D" #{"A"}, "E" #{"F" "B" "D"}}
+                               #{"C" "F" "B" "A" "D" "E"}))))

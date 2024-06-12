@@ -130,20 +130,23 @@
          status            (into [] (take workers-count (repeat nil)))
          done              []
          steps             steps]
-    (if (empty? steps)
-      total-seconds
-      (let [workers (idle-workers remaining)
-            {:keys [remaining status done]} (after-a-second remaining status done)
+    (if (and (empty? steps)
+             (and (> total-seconds 0) (every? zero? remaining)))
+      (- total-seconds 1)
+      (let [{:keys [remaining status done]} (after-a-second remaining status done)
+            workers (idle-workers remaining)
             candidates (filter #(subset? (deps %) (set done)) steps)
             next-steps (-> candidates (sort))
             total-seconds (inc total-seconds)]
-        (println total-seconds workers remaining status done)
-        (if (every? empty? [workers next-steps])
+        (if (every? not-empty [workers next-steps])
           (let [{:keys [updated-remaining
                         updated-status
                         updated-steps]} (give-works workers next-steps remaining status steps offset)]
+            (println workers updated-remaining updated-status done)
             (recur total-seconds updated-remaining updated-status done updated-steps))
-          (recur total-seconds remaining status done steps))))))
+          (do
+            (println workers remaining status done)
+            (recur total-seconds remaining status done steps)))))))
 
 (comment
   (day-7-part-1 "resources/day_7_sample.txt") ; "CABDFE"
