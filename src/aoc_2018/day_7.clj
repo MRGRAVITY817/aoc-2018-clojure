@@ -102,37 +102,48 @@
        (ffirst)))
 
 (defn work-time
-  "Get work time based on alphebetical order."
-  [alpha-string]
+  "Get work time based on alphebetical order + offset."
+  [offset alpha-string]
   (let [alphabet (first alpha-string)]
-    (+ (- (int alphabet) (int \A)) 61)))
+    (+ (- (int alphabet) (int \A)) (+ 1 offset))))
 
 (defn give-work
   "Get updated remaining time and status by allocation work to idle worker."
-  [idle next-step remaining status]
-  {:updated-remaining (assoc remaining idle (work-time next-step))
+  [idle next-step remaining status offset]
+  {:updated-remaining (assoc remaining idle (work-time offset next-step))
    :updated-status (assoc status idle next-step)})
 
-#_(defn schedule-5-workers
-    [deps steps]
-    (loop [total-seconds     0
-           remaining         [0 0 0 0 0]
-           status            [nil nil nil nil nil]
-           done              []
-           steps             steps]
-      (if (empty? steps)
-        total-seconds
-        (let [{:keys [remaining status done steps]} (after-a-second remaining status done steps)
-              total-seconds (inc total-seconds)
-              idle (idle-worker remaining)
-              candidates (filter #(subset? (deps %) (set done)) steps)
-              next-step (-> candidates (sort) (first))]
-          (if (and idle next-step)
-            (let [{:keys [updated-remaining updated-status]} (give-work idle next-step remaining status)]
-              (recur total-seconds updated-remaining updated-status done steps))
-            (recur total-seconds remaining status done steps))))))
+(defn schedule-workers
+  [workers offset deps steps]
+  (loop [total-seconds     0
+         remaining         (into [] (take workers (repeat 0)))
+         status            (into [] (take workers (repeat nil)))
+         done              []
+         steps             steps]
+    (if (empty? steps)
+      total-seconds
+      (let [{:keys [remaining status done steps]} (after-a-second remaining status done steps)
+            total-seconds (inc total-seconds)
+            idle (idle-worker remaining)
+            candidates (filter #(and (subset? (deps %) (set done))
+                                     (not (some (fn [n] (= n %)) status))) steps)
+            next-step (-> candidates (sort) (first))]
+        (if (and idle next-step)
+          (let [{:keys [updated-remaining updated-status]} (give-work idle next-step remaining status offset)]
+            (recur total-seconds updated-remaining updated-status done steps))
+          (recur total-seconds remaining status done steps))))))
 
 (comment
+  (day-7-part-1 "resources/day_7_sample.txt") ; "CABDFE"
+  (day-7-part-1 "resources/day_7_input.txt")  ; "OCPUEFIXHRGWDZABTQJYMNKVSL"
+  ;; Helper functions
+  (let [{:keys [deps steps]} (->> "resources/day_7_sample.txt"
+                                  (slurp)
+                                  (string/split-lines)
+                                  (map parse-line)
+                                  (lines->deps-and-steps))]
+    (schedule-workers 2 0 deps steps))
+
   (if "B"
     (map #(if (= % "B") nil %) [nil "B" "C" "D" "E"])
     [nil "B" "C" "D" "E"])
@@ -142,17 +153,12 @@
        (first)
        (second))
   (map #(vector %1 %2) [1 2 3] [1 2 3])
-  (day-7-part-1 "resources/day_7_sample.txt") ; "CABDFE"
-  (day-7-part-1 "resources/day_7_input.txt")  ; "OCPUEFIXHRGWDZABTQJYMNKVSL"
 
   (let [{:keys [deps steps]} (->> "resources/day_7_sample.txt"
                                   (slurp)
                                   (string/split-lines)
                                   (map parse-line)
                                   (lines->deps-and-steps))]
-; {:deps
-;  {"A" #{"C"}, "F" #{"C"}, "B" #{"A"}, "D" #{"A"}, "E" #{"F" "B" "D"}},
-;  :steps #{"E" "C" "F" "B" "A" "D"}}
     (order-steps deps steps)))
 
 

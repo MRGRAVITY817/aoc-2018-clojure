@@ -48,6 +48,14 @@
          (sut/after-a-second [0 1 2 3 4]
                              [nil "B" "C" "D" "E"]
                              ["A"]
+                             #{"B" "C" "D" "E"})))
+  (is (= {:remaining [0 0]
+          :status [nil nil]
+          :done ["A" "B"]
+          :steps #{"C" "D" "E"}}
+         (sut/after-a-second [0 1]
+                             [nil "B"]
+                             ["A"]
                              #{"B" "C" "D" "E"}))))
 
 (deftest test-get-finished-step?
@@ -64,11 +72,11 @@
 
 (deftest test-work-time
   (is (= 61
-         (sut/work-time "A")))
+         (sut/work-time 60 "A")))
   (is (= 86
-         (sut/work-time "Z"))))
+         (sut/work-time 60 "Z"))))
 
 (deftest test-give-work
   (is (= {:updated-remaining [61 1 1 1 1]
           :updated-status ["A" "B" "C" "D" "E"]}
-         (sut/give-work 0 "A" [0 1 1 1 1] [nil "B" "C" "D" "E"]))))
+         (sut/give-work 0 "A" [0 1 1 1 1] [nil "B" "C" "D" "E"] 60))))
