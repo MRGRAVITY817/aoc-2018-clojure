@@ -40,16 +40,20 @@
            (sut/order-steps {"A" #{"C"}, "F" #{"C"}, "B" #{"A"}, "D" #{"A"}, "E" #{"F" "B" "D"}}
                             #{"C" "F" "B" "A" "D" "E"})))))
 
-;; how to solve part 2?
-;; - manage a vector that has 5 slots (for each worker), containing remaining seconds
-;; - each seconds will be decremented for every recursive call, while we accumulate the total seconds at the same time
-;; - if a worker has 0 seconds left, it will be available for the next task (idle)
-;; - idle workers will be assigned to the next task (lexicographically first & doesn't have any preceding steps)
-;; - if all workers are idle, it means we have finished all tasks
+(deftest test-after-a-second
+  (is (= {:remaining [0 0 1 2 3]
+          :status [nil nil "C" "D" "E"]
+          :done ["A" "B"]}
+         (sut/after-a-second [0 1 2 3 4]
+                             [nil "B" "C" "D" "E"]
+                             ["A"]))))
 
-;; loop states
-;; - deps and steps
-;; - remaining seconds for each worker (5 slots)
-;; - steps which are being worked on by each worker
-;; - total seconds
-;; - done steps
+(deftest test-get-finished-step?
+  (is (= "B"
+         (sut/get-finished-step? [0 1 2 3 4] [nil "B" "C" "D" "E"]))))
+
+(deftest test-idle-worker
+  (is (= 0
+         (sut/idle-worker [0 1 2 3 4])))
+  (is (= 3
+         (sut/idle-worker [1 1 2 0 0]))))
