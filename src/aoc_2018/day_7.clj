@@ -78,7 +78,7 @@
 
 (defn after-a-second
   "Update collections (remaining, status, done, steps) after a second has passed."
-  [remaining status done steps]
+  [remaining status done]
   (let [finished-step? (get-finished-step? remaining status)]
     {:remaining (apply vector (map #(max 0 (dec %)) remaining))
      :status    (if finished-step?
@@ -86,20 +86,19 @@
                   status)
      :done      (if finished-step?
                   (conj done finished-step?)
-                  done)
-     :steps     (disj steps finished-step?)}))
+                  done)}))
 
-(defn idle-worker
-  "Find the first idle worker's index from given remaining seconds list.
+(defn idle-workers
+  "Find the idle workers' indices from given remaining seconds.
 
    For example, if given [1 0 2 3 0], we have worker 1 and worker 4 being idle,
-   hence we return the first index 1. 
+   hence we return the [1 4]. 
   "
   [remaining]
   (->> remaining
        (map-indexed vector)
        (filter #(zero? (second %)))
-       (ffirst)))
+       (map first)))
 
 (defn work-time
   "Get work time based on alphebetical order + offset."
@@ -109,9 +108,10 @@
 
 (defn give-work
   "Get updated remaining time and status by allocation work to idle worker."
-  [idle next-step remaining status offset]
+  [idle next-step remaining status steps offset]
   {:updated-remaining (assoc remaining idle (work-time offset next-step))
-   :updated-status (assoc status idle next-step)})
+   :updated-status (assoc status idle next-step)
+   :updated-steps (disj steps next-step)})
 
 (defn schedule-workers
   [workers offset deps steps]
@@ -122,15 +122,17 @@
          steps             steps]
     (if (empty? steps)
       total-seconds
-      (let [{:keys [remaining status done steps]} (after-a-second remaining status done steps)
-            total-seconds (inc total-seconds)
-            idle (idle-worker remaining)
-            candidates (filter #(and (subset? (deps %) (set done))
-                                     (not (some (fn [n] (= n %)) status))) steps)
-            next-step (-> candidates (sort) (first))]
+      (let [idle (idle-workers remaining)
+            {:keys [remaining status done]} (after-a-second remaining status done)
+            candidates (filter #(subset? (deps %) (set done)) steps)
+            next-step (-> candidates (sort) (first))
+            total-seconds (inc total-seconds)]
+        (println total-seconds idle remaining status done)
         (if (and idle next-step)
-          (let [{:keys [updated-remaining updated-status]} (give-work idle next-step remaining status offset)]
-            (recur total-seconds updated-remaining updated-status done steps))
+          (let [{:keys [updated-remaining
+                        updated-status
+                        updated-steps]} (give-work idle next-step remaining status steps offset)]
+            (recur total-seconds updated-remaining updated-status done updated-steps))
           (recur total-seconds remaining status done steps))))))
 
 (comment
@@ -143,6 +145,13 @@
                                   (map parse-line)
                                   (lines->deps-and-steps))]
     (schedule-workers 2 0 deps steps))
+
+  (let [{:keys [deps steps]} (->> "resources/day_7_sample.txt"
+                                  (slurp)
+                                  (string/split-lines)
+                                  (map parse-line)
+                                  (lines->deps-and-steps))]
+    (schedule-workers 5 60 deps steps))
 
   (if "B"
     (map #(if (= % "B") nil %) [nil "B" "C" "D" "E"])
