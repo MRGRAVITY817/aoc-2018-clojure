@@ -54,9 +54,9 @@
                              [nil "B"]
                              ["A"]))))
 
-(deftest test-get-finished-step?
-  (is (= "B"
-         (sut/get-finished-step? [0 1 2 3 4] [nil "B" "C" "D" "E"]))))
+(deftest test-get-finished-steps?
+  (is (= '("B")
+         (sut/get-finished-steps? [0 1 2 3 4] [nil "B" "C" "D" "E"]))))
 
 (deftest test-idle-workers
   (is (= '()

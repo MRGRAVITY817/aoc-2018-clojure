@@ -68,25 +68,24 @@
 ;; - total seconds
 ;; - done steps
 
-(defn get-finished-step?
+(defn get-finished-steps?
   "Get finished step (which has only one remaning second), from given remaining seconds and steps status."
   [remaining status]
   (->> (map vector remaining status)
        (filter #(= 1 (first %)))
-       (first)
-       (second)))
+       (map second)))
+
+(defn is-finished-step?
+  [finished-steps step]
+  (not-empty (filter #(= % step) finished-steps)))
 
 (defn after-a-second
   "Update collections (remaining, status, done, steps) after a second has passed."
   [remaining status done]
-  (let [finished-step? (get-finished-step? remaining status)]
+  (let [finished-steps (get-finished-steps? remaining status)]
     {:remaining (apply vector (map #(max 0 (dec %)) remaining))
-     :status    (if finished-step?
-                  (apply vector (map #(if (= % finished-step?) nil %) status))
-                  status)
-     :done      (if finished-step?
-                  (conj done finished-step?)
-                  done)}))
+     :status    (apply vector (map #(if (is-finished-step? finished-steps %) nil %) status))
+     :done      (into done finished-steps)}))
 
 (defn idle-workers
   "Find the idle workers' indices from given remaining seconds.
@@ -148,6 +147,15 @@
             (println workers remaining status done)
             (recur total-seconds remaining status done steps)))))))
 
+(defn day-7-part-2
+  [filename]
+  (let [{:keys [deps steps]} (->> filename
+                                  (slurp)
+                                  (string/split-lines)
+                                  (map parse-line)
+                                  (lines->deps-and-steps))]
+    (schedule-workers 5 60 deps steps)))
+
 (comment
   (day-7-part-1 "resources/day_7_sample.txt") ; "CABDFE"
   (day-7-part-1 "resources/day_7_input.txt")  ; "OCPUEFIXHRGWDZABTQJYMNKVSL"
@@ -159,7 +167,7 @@
                                   (lines->deps-and-steps))]
     (schedule-workers 2 0 deps steps))
 
-  (let [{:keys [deps steps]} (->> "resources/day_7_sample.txt"
+  (let [{:keys [deps steps]} (->> "resources/day_7_input.txt"
                                   (slurp)
                                   (string/split-lines)
                                   (map parse-line)
@@ -182,11 +190,4 @@
                                   (map parse-line)
                                   (lines->deps-and-steps))]
     (order-steps deps steps)))
-
-
-
-
-
-
-
 
