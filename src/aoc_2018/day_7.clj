@@ -107,31 +107,41 @@
     (+ (- (int alphabet) (int \A)) (+ 1 offset))))
 
 (defn give-work
-  "Get updated remaining time and status by allocation work to idle worker."
-  [idle next-step remaining status steps offset]
-  {:updated-remaining (assoc remaining idle (work-time offset next-step))
-   :updated-status (assoc status idle next-step)
+  "Get updated remaining time and status by allocation work to idle workers."
+  [worker next-step remaining status steps offset]
+  {:updated-remaining (assoc remaining worker (work-time offset next-step))
+   :updated-status (assoc status worker next-step)
    :updated-steps (disj steps next-step)})
 
+(defn give-works
+  [workers next-steps remaining status steps offset]
+  (->> (map vector workers next-steps)
+       (reduce (fn [{:keys [updated-remaining updated-status updated-steps]}
+                    [worker next-step]]
+                 (give-work worker next-step updated-remaining updated-status updated-steps offset))
+               {:updated-remaining remaining
+                :updated-status status
+                :updated-steps steps})))
+
 (defn schedule-workers
-  [workers offset deps steps]
+  [workers-count offset deps steps]
   (loop [total-seconds     0
-         remaining         (into [] (take workers (repeat 0)))
-         status            (into [] (take workers (repeat nil)))
+         remaining         (into [] (take workers-count (repeat 0)))
+         status            (into [] (take workers-count (repeat nil)))
          done              []
          steps             steps]
     (if (empty? steps)
       total-seconds
-      (let [idle (idle-workers remaining)
+      (let [workers (idle-workers remaining)
             {:keys [remaining status done]} (after-a-second remaining status done)
             candidates (filter #(subset? (deps %) (set done)) steps)
-            next-step (-> candidates (sort) (first))
+            next-steps (-> candidates (sort))
             total-seconds (inc total-seconds)]
-        (println total-seconds idle remaining status done)
-        (if (and idle next-step)
+        (println total-seconds workers remaining status done)
+        (if (every? empty? [workers next-steps])
           (let [{:keys [updated-remaining
                         updated-status
-                        updated-steps]} (give-work idle next-step remaining status steps offset)]
+                        updated-steps]} (give-works workers next-steps remaining status steps offset)]
             (recur total-seconds updated-remaining updated-status done updated-steps))
           (recur total-seconds remaining status done steps))))))
 
