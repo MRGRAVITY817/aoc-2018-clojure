@@ -77,8 +77,8 @@
        (second)))
 
 (defn after-a-second
-  "Update three lists (remaining, status, done) after a second has passed."
-  [remaining status done]
+  "Update collections (remaining, status, done, steps) after a second has passed."
+  [remaining status done steps]
   (let [finished-step? (get-finished-step? remaining status)]
     {:remaining (apply vector (map #(max 0 (dec %)) remaining))
      :status    (if finished-step?
@@ -86,16 +86,8 @@
                   status)
      :done      (if finished-step?
                   (conj done finished-step?)
-                  done)}))
-
-(defn schedule-5-workers
-  [deps steps]
-  (loop [total-seconds     0
-         remaining         [0 0 0 0 0]
-         status            [nil nil nil nil nil]
-         done              []
-         steps             steps]
-    (let [{:keys [remaining status done]} (after-a-second remaining status done)])))
+                  done)
+     :steps     (disj steps finished-step?)}))
 
 (defn idle-worker
   "Find the first idle worker's index from given remaining seconds list.
@@ -108,6 +100,17 @@
        (map-indexed vector)
        (filter #(zero? (second %)))
        (ffirst)))
+
+#_(defn schedule-5-workers
+    [deps steps]
+    (loop [total-seconds     0
+           remaining         [0 0 0 0 0]
+           status            [nil nil nil nil nil]
+           done              []
+           steps             steps]
+      (let [{:keys [remaining status done steps]} (after-a-second remaining status done steps)]
+        (if (not-any? zero? remaining)
+          (recur (inc total-seconds) remaining status done steps)))))
 
 (comment
   (if "B"

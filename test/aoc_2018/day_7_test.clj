@@ -43,10 +43,12 @@
 (deftest test-after-a-second
   (is (= {:remaining [0 0 1 2 3]
           :status [nil nil "C" "D" "E"]
-          :done ["A" "B"]}
+          :done ["A" "B"]
+          :steps #{"C" "D" "E"}}
          (sut/after-a-second [0 1 2 3 4]
                              [nil "B" "C" "D" "E"]
-                             ["A"]))))
+                             ["A"]
+                             #{"B" "C" "D" "E"}))))
 
 (deftest test-get-finished-step?
   (is (= "B"
