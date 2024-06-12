@@ -101,6 +101,18 @@
        (filter #(zero? (second %)))
        (ffirst)))
 
+(defn work-time
+  "Get work time based on alphebetical order."
+  [alpha-string]
+  (let [alphabet (first alpha-string)]
+    (+ (- (int alphabet) (int \A)) 61)))
+
+(defn give-work
+  "Get updated remaining time and status by allocation work to idle worker."
+  [idle next-step remaining status]
+  {:updated-remaining (assoc remaining idle (work-time next-step))
+   :updated-status (assoc status idle next-step)})
+
 #_(defn schedule-5-workers
     [deps steps]
     (loop [total-seconds     0
@@ -108,9 +120,17 @@
            status            [nil nil nil nil nil]
            done              []
            steps             steps]
-      (let [{:keys [remaining status done steps]} (after-a-second remaining status done steps)]
-        (if (not-any? zero? remaining)
-          (recur (inc total-seconds) remaining status done steps)))))
+      (if (empty? steps)
+        total-seconds
+        (let [{:keys [remaining status done steps]} (after-a-second remaining status done steps)
+              total-seconds (inc total-seconds)
+              idle (idle-worker remaining)
+              candidates (filter #(subset? (deps %) (set done)) steps)
+              next-step (-> candidates (sort) (first))]
+          (if (and idle next-step)
+            (let [{:keys [updated-remaining updated-status]} (give-work idle next-step remaining status)]
+              (recur total-seconds updated-remaining updated-status done steps))
+            (recur total-seconds remaining status done steps))))))
 
 (comment
   (if "B"
@@ -134,6 +154,8 @@
 ;  {"A" #{"C"}, "F" #{"C"}, "B" #{"A"}, "D" #{"A"}, "E" #{"F" "B" "D"}},
 ;  :steps #{"E" "C" "F" "B" "A" "D"}}
     (order-steps deps steps)))
+
+
 
 
 

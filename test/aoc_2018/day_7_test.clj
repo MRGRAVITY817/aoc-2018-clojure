@@ -55,7 +55,20 @@
          (sut/get-finished-step? [0 1 2 3 4] [nil "B" "C" "D" "E"]))))
 
 (deftest test-idle-worker
+  (is (= nil
+         (sut/idle-worker [1 1 2 3 4])))
   (is (= 0
          (sut/idle-worker [0 1 2 3 4])))
   (is (= 3
          (sut/idle-worker [1 1 2 0 0]))))
+
+(deftest test-work-time
+  (is (= 61
+         (sut/work-time "A")))
+  (is (= 86
+         (sut/work-time "Z"))))
+
+(deftest test-give-work
+  (is (= {:updated-remaining [61 1 1 1 1]
+          :updated-status ["A" "B" "C" "D" "E"]}
+         (sut/give-work 0 "A" [0 1 1 1 1] [nil "B" "C" "D" "E"]))))
